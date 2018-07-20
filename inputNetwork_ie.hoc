@@ -1,0 +1,83 @@
+// polaczenia z wastwy hamujacej do pobudzajacej
+
+NumberConnections_ie =0
+NumberPossibleConnections_ie =0
+MAXNUMBER_CONNECTION_ie = NumberCells_i*NumberCells_e
+CONNECTION_PROB_ie = 1
+CONNECTION_THRESHOLD_ie = 1
+CONNECTION_DELAY_ie = 0.002
+CONNECTION_WEIGHT_ie = 0.0025		//zakres 0-0.0025
+
+SHOW_TOPOLOGY_ie = 0
+
+objref prob_ie
+prob_ie = new Random()
+
+objref nclist_ie
+nclist_ie = new List()
+
+objref CellConnection_ie[MAXNUMBER_CONNECTION_ie]
+
+// funkcja do zmiany wagi polaczen
+w_ie = CONNECTION_WEIGHT_ie
+proc weight_ie() { local i
+    w_ie = $1
+    for i=0, NumberConnections_ie-1 { 
+        CellConnection_ie[i].weight = $1
+    }
+}
+/*
+// funkcja do zmiany czasu miedzy progiem a przekroczeniem źrodla
+d_ie = CONNECTION_DELAY_ie
+proc delay_ie() { local i
+    d_ie = $1
+    for i=0, NumberConnections_ie-1 { 
+        CellConnection_ie[i].delay = $1
+    }
+}
+
+// funkcja do zmiany progu
+th_ie = CONNECTION_THRESHOLD_ie
+proc threshold_ie() { local i
+    th_ie = $1
+    for i=0, NumberConnections_ie-1 { 
+        CellConnection_ie[i].threshold = $1
+    }
+}
+
+// funkcja do zmiany prawdopodobienstwa polaczeni
+p_ie = CONNECTION_PROB_ie
+proc pdb_ie() { local i
+    p_ie = $1
+    for i=0, NumberConnections_ie-1 { 
+        CellConnection_ie[i].prob = $1
+    }
+}
+*/
+proc netcom_ie(){
+	adist = sqrt( ($o2.x-$o1.x)^2 + ($o2.y-$o1.y)^2+($o2.z-$o1.z)^2 )
+	$o1.soma nclist_ie.append(new NetCon(&v(0.5),$o2.syn_i, CONNECTION_THRESHOLD_ie,CONNECTION_DELAY_ie*adist,CONNECTION_WEIGHT_ie))
+	NumberConnections_ie = NumberConnections_ie+1	
+	if (SHOW_TOPOLOGY_ie){
+		$o1.addConnection($o2.x, $o2.y, $o2.z)
+	}
+}
+
+for i=0, NumberCells_i-1{
+	for j=0, NumberCells_e-1{
+		NumberPossibleConnections_ie = NumberPossibleConnections_ie+1
+		aprob = prob_ie.uniform(0,1)
+		if((aprob<=CONNECTION_PROB_ie) && (i!=j)){
+			netcom_ie(neuron_i[i],neuron_e[j]) 		
+		}
+	}
+}
+
+objref NetTopology_ie
+
+if (SHOW_TOPOLOGY_ie){
+ NetTopology_ie =  new Shape()
+ NetTopology_ie.show(0)
+}
+
+

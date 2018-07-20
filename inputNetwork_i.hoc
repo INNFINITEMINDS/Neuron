@@ -1,0 +1,88 @@
+// polaczenia w warstwie hamujacej
+
+NumberConnections_i =0						// liczba polaczen
+NumberPossibleConnections_i =0				// liczba możliwych polaczeń
+MAXNUMBER_CONNECTION_i = NumberCells_i^2	// maksymalna liczba polaczen
+CONNECTION_PROB_i = 0.05						// prawdopodobieństwo polaczenia
+CONNECTION_THRESHOLD_i = 1				// próg polaczenia -domyslnie -10mv 
+CONNECTION_DELAY_i = 0.002					// czas między progiem przekroczenia źródła a dostarczeniem zdarzenia do celu
+CONNECTION_WEIGHT_i = 0.00001			 // zakres		// waga polaczenia
+
+SHOW_TOPOLOGY_i = 0				// pokaz polaczenie
+
+objref prob_i					// prawdopodobienstwo 
+prob_i = new Random()
+
+access neuron_i[0].soma				// sekcja uprzywilejowana, ktora uzyskuje wiecej korysci, ma być wybierana gd pierwsze dwie metody nie sa stosowane
+
+objref nclist_i					// utworzenie zmiennej typu lista 
+nclist_i = new List()
+
+
+objref CellConnection_i[MAXNUMBER_CONNECTION_i]	// deklaracja obiektu CellConnection_i 
+
+// funkcja do zmiany wagi polaczen
+w_i = CONNECTION_WEIGHT_i
+proc weight_i() { local i
+    w_i = $1
+    for i=0, NumberConnections_i-1 { 
+        CellConnection_i[i].weight = $1
+    }
+}
+/*
+// funkcja do zmiany czasu miedzy progiem a przekroczeniem źrodla
+d_i = CONNECTION_DELAY_i
+proc delay_i() { local i
+    d_i = $1
+    for i=0, NumberConnections_i-1 { 
+        CellConnection_i[i].delay = $1
+    }
+}
+
+// funkcja do zmiany progu
+th_i = CONNECTION_THRESHOLD_i
+proc threshold_i() {local i
+    th_i = $1
+    for i=0, NumberConnections_i-1 { 
+        CellConnection_i[i].threshold = $1
+    }
+}
+
+// funkcja do zmiany prawdopodobienstwa polaczeni
+p_i = CONNECTION_PROB_i
+proc pdb_i() { local i
+    p_i = $1
+    for i=0, NumberConnections_i-1 { 
+        CellConnection_i[i].prob = $1
+    }
+}
+*/
+// fukcja to tworzenia polaczen
+proc netcom_i(){
+	adist = sqrt( ($o2.x-$o1.x)^2 + ($o2.y-$o1.y)^2+($o2.z-$o1.z)^2 )	// oblicza odleglosc miedzy neuronami
+	$o1.soma nclist_i.append(new NetCon(&v(.5),$o2.syn_i, CONNECTION_THRESHOLD_i,CONNECTION_DELAY_i*adist,CONNECTION_WEIGHT_i))
+	NumberConnections_i = NumberConnections_i+1	
+	if (SHOW_TOPOLOGY_i){
+		$o1.addConnection($o2.x, $o2.y, $o2.z)
+	}
+}
+
+for i=0, NumberCells_i-1{
+	for j=0, NumberCells_i-1{
+		NumberPossibleConnections_i = NumberPossibleConnections_i+1
+		aprob = prob_i.uniform(0,1)
+		if((aprob<=CONNECTION_PROB_i) && (i!=j)){
+			netcom_i(neuron_i[i],neuron_i[j]) 		
+		}
+	}
+}
+
+
+objref NetTopology_i
+
+if (SHOW_TOPOLOGY_i){
+ NetTopology_i =  new Shape()
+ NetTopology_i.show(0)
+}
+
+

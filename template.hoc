@@ -1,0 +1,53 @@
+begintemplate PYCell    // tworzenie klasy PYCell
+
+/// public -  definiuje zmienne, procedury, funkcje widoczne z zewnatrz
+ public soma, syn_i,syn_e, axon  // zezwolenie na dostep do stalych : soma, synapsy pobudzajace
+ public x, y, z			// i hamujace, wspolrzedne, 
+ public addConnection		// funkcja tworzaca polaczenia 
+ 
+///////// topology ///////////////////
+ create soma, axon		// utworzenie somy i axonu
+ objref syn_i, syn_e		// objref -definicja obiektu -> synapsa hamujaca i pobudzajaca
+
+ proc init() {			/// inicjalizacja bez tego przy wywolaniu wartosci bylyby zero
+    x = $1			//wspolrzedne x,y,z
+    y = $2
+    z = $3
+
+///////// geometry ////////////////////
+    soma {			// soma
+      diam = 20			// nadanie srednicy (domyslnie 30[um])
+      L = 20			// dlugosc (domyslnie 30[um])
+    //// biophysics
+    insert hh			// biofizyka dołaczenie przewodnosci Hodgkin-Huxley
+    syn_e = new Exp2Syn(.5)	// utworzenie synapsy pobudzajacej przez wbudowana fukcje Exp2Syn 
+    syn_e.tau1 = 0.5	// czas narastania [ms]
+	syn_e.tau2 = 5		// czas zaniku [ms] % 5
+	syn_e.e=0		// potencjal [mV]
+
+	syn_i = new Exp2Syn(.5)	// synapsa hamujaca
+    syn_i.tau1 = 0.5
+	syn_i.tau2 = 2
+	syn_i.e=-70		// potencjal [mV]
+     
+    // set lattice position of cell - ustawienie pozycji 
+      l = L			// zmienna l wynosi tyle co dlugosc somy
+      d = diam			// d = srednicy somy	
+      pt3dclear()		// czyszczenie lokalizacji kratki
+      pt3dadd(x-l/2, y, z, d)	// dodaj punkt do podanje lokalizacji o średnicy d
+      pt3dadd(x+l/2, y, z, d)
+    		}
+    axon{			// axon
+      diam = 1			// srednica [um]
+	}
+
+}
+proc addConnection() {		// funkcja addConnection 
+      axon {			// polaczenie z axonu 
+      pt3dadd(x, y, z, 1)
+      pt3dadd($1, $2, $3, 1)
+      }
+}
+
+endtemplate PYCell		// zakonczenie klasy
+

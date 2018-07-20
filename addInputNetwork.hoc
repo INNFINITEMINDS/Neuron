@@ -1,0 +1,37 @@
+/// parametry
+NETIN_SP_START = 0	// star time of first spike *10
+NETIN_SP_INTERVAL = 5 	// time between spikes
+NETIN_SP_NUMBER = 1000  // number of spikes *50
+NETIN_SP_NOISE = 0.8   // range 0-1 
+
+NETIN_SP_WEIGHT = 0.001 //*0.3
+NETIN_SP_TARGET = 0
+NETTIN_THRESHOLD = 0.1 // *0.1
+NETTIN_DELAY = 0	// *0
+
+
+
+NETIN_SP_X_e = neuron_e[NETIN_SP_TARGET].x
+NETIN_SP_Y_e = neuron_e[NETIN_SP_TARGET].y
+NETIN_SP_Z_e = neuron_e[NETIN_SP_TARGET].z
+
+objref StimTrigger[NumberCells_e], NetInput[NumberCells_e], nil, tobj
+
+
+for i=0, NumberCells_e-1{
+	StimTrigger[i] = new NetStim(.5)
+	StimTrigger[i].start = NETIN_SP_START
+	StimTrigger[i].interval = NETIN_SP_INTERVAL
+	StimTrigger[i].number = NETIN_SP_NUMBER
+	StimTrigger[i].noise = NETIN_SP_NOISE
+
+	NetInput[i] = new NetCon(StimTrigger[i], neuron_e[i].syn_e, NETTIN_THRESHOLD , NETTIN_DELAY, NETIN_SP_WEIGHT)
+}
+
+
+
+	
+
+
+
+

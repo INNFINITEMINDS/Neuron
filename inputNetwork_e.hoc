@@ -1,0 +1,93 @@
+// polaczenia w warstwie pobudzajacej
+
+NumberConnections_e =0						// liczba polaczen
+NumberPossibleConnections_e =0				// liczba możliwych polaczeń
+MAXNUMBER_CONNECTION_e = NumberCells_e^2	// maksymalna liczba polaczen
+CONNECTION_PROB_e = 0.05						// prawdopodobieństwo polaczenia 
+CONNECTION_THRESHOLD_e = 0.1				// próg polaczenia -domyslnie 10mv 
+CONNECTION_DELAY_e = 0.002					// czas między progiem przekroczenia źródła a dostarczeniem zdarzenia do celu
+CONNECTION_WEIGHT_e = 0.000001	 	// zakres0-0.0001			// waga polaczenia
+
+SHOW_TOPOLOGY_e = 0				// pokaz polaczenie
+
+
+objref prob_e					// prawdopodobienstwo 
+prob_e = new Random()
+
+
+//access neuron_e[0].soma				// sekcja uprzywilejowana, ktora uzyskuje wiecej korysci, ma być wybierana gd pierwsze dwie metody nie sa stosowane
+
+objref nclist_e					// utworzenie zmiennej typu lista 
+nclist_e = new List()
+
+
+objref CellConnection_e[MAXNUMBER_CONNECTION_e]	// zmienna polaczen z max zakresem
+
+// funkcja do zmiany wagi polaczen
+w_e = CONNECTION_WEIGHT_e
+proc weight_e() { local i
+    w_e = $1
+    for i=0, NumberConnections_e-1 { 
+        CellConnection_e[i].weight = $1
+    }
+}
+/*
+// funkcja do zmiany czasu miedzy progiem a przekroczeniem źrodla
+d_e = CONNECTION_DELAY_e
+proc delay_e() { local i
+    d_e = $1
+    for i=0, NumberConnections_e-1 { 
+        //CellConnection_e[i].delay = $1
+        neuron_e[i].delay =$1
+    }
+}
+
+// funkcja do zmiany progu
+th_e = CONNECTION_THRESHOLD_e
+proc threshold_e() { local i
+    th_e = $1
+    for i=0, NumberConnections_e-1 { 
+        CellConnection_e[i].threshold = $1
+    }
+}
+
+// funkcja do zmiany prawdopodobienstwa polaczeni
+p_e = CONNECTION_PROB_e
+proc pdb_e() { local i
+    p_e = $1
+    for i=0, NumberConnections_e-1 { 
+        CellConnection_e[i].prob = $1
+        CONNECTION_PROB_e= $1
+    }
+}
+*/	
+
+// fukcja to tworzenia polaczen
+proc netcom(){ // $o1 - source cell , $o2 - target cell
+	adist = sqrt( ($o2.x-$o1.x)^2 + ($o2.y-$o1.y)^2+($o2.z-$o1.z)^2 ) // odleglosc miedzy komorkami
+	$o1.soma nclist_e.append(new NetCon(&v(.5),$o2.syn_e, CONNECTION_THRESHOLD_e,CONNECTION_DELAY_e*adist,CONNECTION_WEIGHT_e)) // dodanie do listy polaczenia
+	NumberConnections_e = NumberConnections_e+1	
+	if (SHOW_TOPOLOGY_e){
+		$o1.addConnection($o2.x, $o2.y, $o2.z) // tworzy polaczenie - rysowanie
+	}
+}
+
+
+for i=0, NumberCells_e-1{		// iteracja po x,y,z
+	for j=0, NumberCells_e-1{
+		NumberPossibleConnections_e = NumberPossibleConnections_e+1
+		aprob = prob_e.uniform(0,1) // prawdopodobienstwo polaczenia
+		if((aprob<=CONNECTION_PROB_e) && (i!=j)){ // jesli spelniony warunek to utworz polaczenie 
+			netcom(neuron_e[i],neuron_e[j]) 		
+		}
+	}
+}
+
+objref NetTopology_e
+
+if (SHOW_TOPOLOGY_e){	// jesli zmienna =1 
+ NetTopology_e =  new Shape()	// wyswietl polaczenia na wykresie
+ NetTopology_e.show(0)
+}
+
+

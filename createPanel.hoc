@@ -1,0 +1,32 @@
+/// inferfejs graficzny do modyfikacji parametrow
+
+xpanel("Model parameters ")
+//variable_domain(&IAF_tau, 0,1e99)
+//xvalue("Tau (ms)","IAF_tau", 1,"settau(IAF_tau)", 0, 0 )
+//xvalue("Nettin_sp_weight_e","net_sp_e", 1,"net_weight_e(net_sp_e)", 1, 0 )
+
+xvalue("Connection Weight_e","w_e", 1,"weight_e(w_e)", 1, 0 )
+//xvalue("Connection Delay_e","d_e", 1,"delay_e(d_e)", 1, 0 )
+//xvalue("Connection THRESHOLD_e","th_e", -10,"threshold_e(th_e)", 1, 0 )
+//xvalue("Connection PROB_e","p_e", 1,"pdb_e(p_e)", 1, 0 )
+
+//xvalue("Connection Weight_i","w_i", 1,"weight_i(w_i)", 1, 0 )
+//xvalue("Connection Delay_i","d_i", 1,"delay_i(d_i)", 1, 0 )
+//xvalue("Connection THRESHOLD_i","th_i", -10,"threshold_i(th_i)", 1, 0 )
+//xvalue("Connection PROB_i","p_i", 1,"pdb_i(p_i)", 1, 0 )
+
+xvalue("Connection Weight_ei","w_ei", 1,"weight_ei(w_ei)", 1, 0 )
+//xvalue("Connection Delay_ei","d_ei", 1,"delay_ei(d_ei)", 1, 0 )
+//xvalue("Connection THRESHOLD_ei","th_ei", -10,"threshold_ei(th_ei)", 1, 0 )
+//xvalue("Connection PROB_ei","p_ei", 1,"pdb_ei(p_ei)", 1, 0 )
+
+xvalue("Connection Weight_ie","w_ie", 1,"weight_ie(w_ie)", 1, 0 )
+//xvalue("Connection Delay_ie","d_ie", 1,"delay_ie(d_ie)", 1, 0 )
+//xvalue("Connection THRESHOLD_ie","th_ie", -10,"threshold_ie(th_ie)", 1, 0 )
+//xvalue("Connection PROB_ie","p_ie", 1,"pdb_ie(p_ie)", 1, 0 )
+
+xvalue("Tstop","tstop", 1,"", 0, 0 )
+xbutton("go", "go()")
+xbutton("quit","quit()")
+xpanel(250,300)
+//xpanel()

@@ -1,0 +1,123 @@
+// INIT
+load_file("nrngui.hoc") 	// dolaczenie biblioteki GUI
+
+//------------------- general simulation settings------------------------
+tstart = 0			// stale czasowe
+tstop = 500
+PLOT_SHAPE = 1
+
+// ----------------------------procedures for adding graphs-----------------
+objectvar g[20]			// max 20 graphs
+ngraph = 0
+
+proc addgraph() { local ii	// define subroutine to add a new graph
+				// addgraph("variable", minvalue, maxvalue)
+	ngraph = ngraph+1
+	ii = ngraph-1
+	g[ii] = new Graph()
+	g[ii].size(tstart,tstop,$2,$3)
+	g[ii].xaxis()
+	g[ii].yaxis()
+	g[ii].addvar($s1,1,0)
+	//g[ii].view(tstart,0,tstop,$3,250,20,300,200)
+	g[ii].save_name("graphList[0].")
+	graphList[0].append(g[ii])
+}
+
+// -------------------procedure for adding Shape Plot-------------------------
+objref ShapeWindow
+
+proc shape(){
+     ShapeWindow = new PlotShape()
+     ShapeWindow.show(0)
+     ShapeWindow.exec_menu("Shape Plot")
+     //ShapeWindow.scale(-1,2)
+     fast_flush_list.append(ShapeWindow)
+}
+//---------------dolaczenie uzytych modulow ---------------------------
+xopen("template.hoc")
+xopen("create2PYNeurons_e.hoc")
+xopen("create2PYNeurons_i.hoc")
+xopen("inputNetwork_e.hoc")
+xopen("inputNetwork_i.hoc")
+xopen("inputNetwork_ei.hoc")
+xopen("inputNetwork_ie.hoc")
+xopen("rasterplot.hoc")
+xopen("rasterplot_i.hoc")
+xopen("addInputNetwork.hoc")
+xopen("createPanel.hoc")
+
+
+// -------------------------- initialization-----------------------------------
+proc init() {
+  finitialize()
+  fcurrent()
+}
+
+//---------------------------access origin of network---------------------------
+access neuron_e[0].soma
+//access neuron_i[0].soma
+
+//----------------------------------------------------------------------------
+//  add graphs
+//----------------------------------------------------------------------------
+
+addgraph("neuron_e[1].soma.v(0.5)",-80,40)
+addgraph("neuron_i[1].soma.v(0.5)",-80,40)
+
+proc step() { local i
+    for i=1, nstep_steprun { advance() }
+    Plot()    
+	
+}
+
+
+
+if (PLOT_SHAPE) { shape()}
+
+// rasterplot
+objref fig, fig2,fig4
+objref pop_rate,pop_rate2, fig3
+
+proc plotraster() {
+  fig = new Graph()
+  print "raster plot PY"
+  fig.view(tstart,0,tstop,NumberCells_e,0,100,300,200)
+  idvec.mark(fig, timevec, "|")
+  fig.color(3)
+  idvec_i.mark(fig, timevec_i, "|")
+  
+}
+
+
+proc inst_firing_rate(){
+	fig3 = new Graph()
+	print "Instantaneous firing rate"
+	pop_rate = timevec.histogram(0, tstop, 1)
+	pop_rate.plot(fig3)
+	fig.color(3)
+	pop_rate2 = timevec_i.histogram(0, tstop, 1)
+	pop_rate2.plot(fig3)
+}
+
+proc inst_firing_rate2(){
+	fig4 = new Graph()
+	print "Instantaneous firing rate"
+	pop_rate2 = timevec_i.histogram(0, tstop, 1)
+	pop_rate2.plot(fig4)
+}
+
+// add RunControl menu
+proc go() {
+   init()
+   run()
+   plotraster()
+   inst_firing_rate()
+   inst_firing_rate2()
+}
+
+nrncontrolmenu()
+
+
+
+

@@ -1,0 +1,16 @@
+// RASTERPLOT wykres kresek 
+
+objref timevec, idvec, recncs, tobj, nil	// tworzenie potrzebnych zmiennych 
+timevec = new Vector()				// utworzenie wektorow
+idvec = new Vector()
+
+for i=0,NumberCells_e-1 {
+  neuron_e[i].soma tobj = new NetCon(&v(0.5), nil) // utworzenie polaczenia
+  tobj.record(timevec, idvec, i+1) // so all the spike rasters lie above the x axis
+ 
+}
+objref tobj // so we don't accidentally mess up the last NetCon
+
+
+
+

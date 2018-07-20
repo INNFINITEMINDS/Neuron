@@ -1,0 +1,88 @@
+// polaczenia z wastwy pobudzajacej do hamujacej
+
+NumberConnections_ei =0
+NumberPossibleConnections_ei =0
+MAXNUMBER_CONNECTION_ei = NumberCells_e*NumberCells_i
+CONNECTION_PROB_ei = 0.1
+CONNECTION_THRESHOLD_ei = 1
+CONNECTION_DELAY_ei = 0.002
+CONNECTION_WEIGHT_ei = 0.005			//zakres 0-0.005 
+
+SHOW_TOPOLOGY_ei = 0
+
+
+objref prob_ei
+prob_ei = new Random()
+
+objref nclist_ei
+nclist_ei = new List()
+//objref w_ei, d_ei,th_ei,p_ei
+
+objref CellConnection_ei[MAXNUMBER_CONNECTION_ei]
+
+// funkcja do zmiany wagi polaczen
+w_ei = CONNECTION_WEIGHT_ei
+proc weight_ei() { local i
+    w_ei = $1
+    for i=0, NumberConnections_ei-1 { 
+        CellConnection_ei[i].weight = $1
+    }
+}
+/*
+// funkcja do zmiany czasu miedzy progiem a przekroczeniem źrodla
+d_ei = CONNECTION_DELAY_ei
+proc delay_ei() { local i
+    d_ei = $1
+    for i=0, NumberConnections_ei-1 { 
+        CellConnection_ei[i].delay = $1
+    }
+}
+
+// funkcja do zmiany progu
+th_ei = CONNECTION_THRESHOLD_ei
+proc threshold_ei() { local i
+  th_ei = $1
+    for i=0, NumberConnections_ei-1 { 
+        CellConnection_ei[i].threshold = $1
+    }
+}
+
+// funkcja do zmiany prawdopodobienstwa polaczeni
+p_ei = CONNECTION_PROB_ei
+proc pdb_ei() { local i
+    p_ei = $1
+    for i=0, NumberConnections_ei-1 { 
+        CellConnection_ei[i].prob = $1
+    }
+}
+*/
+
+proc netcom_ei(){
+	adist = sqrt( ($o2.x-$o1.x)^2 + ($o2.y-$o1.y)^2+($o2.z-$o1.z)^2 )
+	$o1.soma nclist_ei.append(new NetCon(&v(.5),$o2.syn_e, CONNECTION_THRESHOLD_ei,CONNECTION_DELAY_ei*adist,CONNECTION_WEIGHT_ei))
+	NumberConnections_ei = NumberConnections_ei+1	
+	if (SHOW_TOPOLOGY_ei){
+		$o1.addConnection($o2.x, $o2.y, $o2.z)
+	}
+}
+
+
+for i=0, NumberCells_e-1{
+	for j=0, NumberCells_i-1{
+		NumberPossibleConnections_ei = NumberPossibleConnections_ei+1
+		aprob = prob_ei.uniform(0,1)
+		if((aprob<=CONNECTION_PROB_ei) && (i!=j)){
+			netcom_ei(neuron_e[i],neuron_i[j]) 		
+		}
+	}
+}
+
+
+objref NetTopology_ei
+
+if (SHOW_TOPOLOGY_ei){
+ NetTopology_ei =  new Shape()
+ NetTopology_ei.show(0)
+}
+
+
